@@ -2,10 +2,10 @@ from flask import Blueprint
 from flask import request
 from pydocx import PyDocX
 from paperUtil import parseDocx
-from app import db
+from dbext import db
 from database import paper
-from app import DBsession
 from flask import jsonify
+from sqlalchemy.orm import sessionmaker
 import  json
 
 
@@ -17,6 +17,7 @@ def paper_upload():
     if request.method == "GET":
         return "i get a paper_uplodad Get http"
     if request.method == "POST":
+        DBsession = sessionmaker(bind=db.engine)
         file = request.files['file']
         print("POST get" + file.filename)
         file.save('/Users/jiamingpan/PycharmProjects/Paper_note/paperPDF/' + file.filename)
@@ -36,12 +37,14 @@ def paper_upload():
 
 @paper_bru.route('/get_top_paper',methods=['GET','POST'])
 def get_top_paper():
+    DBsession = sessionmaker(bind=db.engine)
     session = DBsession()
     return ''
 
 @paper_bru.route('/getPaperByTitle',methods=['GET','POST'])
 def getPaperByTitle():
     if request.method == 'POST':
+        DBsession = sessionmaker(bind=db.engine)
         print('start getPaperByTitle')
         data = request.get_data()
         print(data)
@@ -64,6 +67,7 @@ def getPaperByCatlog():
 
 @paper_bru.route('/getPaperByTopTen',methods=['GET','POST'])
 def getPaperByTopTen():
+    DBsession = sessionmaker(bind=db.engine)
     data = request.get_data()
     json_data = json.loads(data.decode('utf-8'))
     numOftop = json_data.get('numOftop')

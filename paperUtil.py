@@ -14,7 +14,7 @@ def parseDocx(filename):
       author = new_list[1]
       abstract =''
       for p in new_list:
-            print (p)
+            #rint (p)
             if 'abstract' in p or 'Abstract' in p:
                   abstract = p
 
