@@ -46,8 +46,11 @@ def user_register():
         account = json_data.get('account')
         password = json_data.get('password')
         email = json_data.get('email')
+
+        dbsession = DBsession()
         new_user = user(_account = account,_passwd = password,_email = email)
         try:
+
             db.session.add(new_user)
         except Exception as e:
             return jsonify({"register":'failed'})

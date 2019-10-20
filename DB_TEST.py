@@ -1,7 +1,8 @@
 from app import db
 from database import user
+from app import DBsession
 
-DBsession = db.session
+
 new_user = user('admin001',123456,'821269398@qq.com')
 
 try:

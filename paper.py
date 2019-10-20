@@ -56,6 +56,30 @@ def getPaperByTitle():
             print('exception')
             return jsonify({"paperQuery": 'failed'})
         print(papers)
-        return 'pp'
+        return ''
+
+@paper_bru.route('/getPaperByCatlog',methods=['GET','POST'])
+def getPaperByCatlog():
+    return ''
+
+@paper_bru.route('/getPaperByTopTen',methods=['GET','POST'])
+def getPaperByTopTen():
+    data = request.get_data()
+    json_data = json.loads(data.decode('utf-8'))
+    numOftop = json_data.get('numOftop')
+    #request for database
+    dbsession = DBsession()
+    try:
+       papers = dbsession.query(paper).filter(paper.all()) # error!!!!
+        #print(papers)
+    except Exception as e:
+        return {'query':'failed'}
+    #papers_json =  papers(database) => papers_json
+    return {'query':'success'}
 
 
+@paper_bru.route('/papertest',methods=['GET','POST'])
+def papertest():
+    html = PyDocX.to_html('./paperPDF/' + 'bitcoin.docx')
+    print(html)
+    return html
