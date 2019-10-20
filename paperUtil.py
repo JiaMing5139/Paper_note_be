@@ -14,11 +14,14 @@ def parseDocx(filename):
       author = new_list[1]
       abstract =''
       for p in new_list:
-            #print (p)
+            print (p)
             if 'abstract' in p or 'Abstract' in p:
                   abstract = p
-                  break
+
       return title,author,abstract
 
 def not_empty(s):
       return s and s.strip()
+
+
+parseDocx('bitcoin.docx')

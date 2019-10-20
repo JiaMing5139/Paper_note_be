@@ -1,0 +1,3 @@
+[console_scripts]
+pydocx = pydocx.__main__:cli
+
