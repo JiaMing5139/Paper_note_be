@@ -5,15 +5,9 @@ from app import DBsession
 
 new_user = user('admin001',123456,'821269398@qq.com')
 
-try:
-    from database import user
-    user_data = db.session.query(user).filter(user._account== 'admin002').all()
-    db.session.commit()
-    print(user_data)
+dbsession = DBsession()
 
+dbsession.add(new_user)
 
-
-except Exception as e:
-    print('log')
-    print(e)
+dbsession.commit()
     
