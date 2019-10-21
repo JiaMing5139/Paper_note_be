@@ -67,19 +67,41 @@ def getPaperByCatlog():
 
 @paper_bru.route('/getPaperByTopTen',methods=['GET','POST'])
 def getPaperByTopTen():
+    print('start get PaperTotpen')
     DBsession = sessionmaker(bind=db.engine)
-    data = request.get_data()
-    json_data = json.loads(data.decode('utf-8'))
-    numOftop = json_data.get('numOftop')
+    # data = request.get_data()
+    # json_data = json.loads(data.decode('utf-8'))
+    # numOftop = json_data.get('numOftop')
+    # print (numOftop)
     #request for database
     dbsession = DBsession()
     try:
-       papers = dbsession.query(paper).filter(paper.all()) # error!!!!
-        #print(papers)
+       papers = dbsession.query(paper).filter().all() # error!!!!
+       #print(len(papers))
+       print(papers[0])
+       print(type(papers))
+       papers_json=get_papersjson(papers)
     except Exception as e:
-        return {'query':'failed'}
+        return {'query':'failed','exception':str(e)}
+    print(papers_json)
     #papers_json =  papers(database) => papers_json
-    return {'query':'success'}
+    papers_dict={'query':'success',"papers_json":papers_json}
+    papers_json=json.dumps(papers_dict)
+    return papers_json
+def get_papersjson(papers):
+    papers_json=[]
+    for paper in papers:
+        id=paper._id
+        title=paper._title
+        abstract=paper._abstract
+        content=paper._content
+        author=paper._author
+        catlog=paper._catlog
+        numOfnotes=paper._numOfnotes
+        paper_json={"id":id,"title":title,"abstract":abstract,"content":content,"author":author,"catlog":catlog,
+                    "numOfnotes":numOfnotes}
+        papers_json.append(paper_json)
+    return papers_json
 
 
 @paper_bru.route('/papertest',methods=['GET','POST'])
