@@ -1,8 +1,7 @@
 from pydocx import PyDocX
 from docx import  Document
-from app import DBsession
+from dbext import db
 from database import sentence
-
 def parseDocx2html(filename):
       html = PyDocX.to_html('./paperPDF/' + filename)
       print(html)

@@ -8,8 +8,7 @@ app = Flask(__name__)
 # init database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@35.199.106.213:3306/papernote'
 db.init_app(app)
-with app.app_context():
-    db.create_all()
+
 #import database
 
 # init blueprint
@@ -26,9 +25,18 @@ app.register_blueprint(paper_bru)
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
     if request.method == "GET":
+
         return "crazy crazy"
+
+@app.route('/create_all', methods=['GET', 'POST'])
+def create_all():
+    if request.method == "GET":
+        print('start create table')
+        db.create_all()
+        return "successfully create_all tables"
 
 
 if __name__ == '__main__':
+    #start create tablet
 
     app.run(debug = True)
