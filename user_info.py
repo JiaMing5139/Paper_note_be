@@ -12,14 +12,12 @@ from database import user
 print("userinformation-user")
 user_info_bru = Blueprint('user',__name__)
 
-
 @user_info_bru.route('/user_for',methods=['GET','POST'])
 def user_get():
     if request.method == "GET":
         return "i get a Get http"
     if request.method == "POST":
         return "i get a Post http"
-
 
 @user_info_bru.route('/user_login',methods=['GET','POST'])
 def user_login():
@@ -53,18 +51,21 @@ def user_register():
         DBsession = sessionmaker(bind=db.engine)
         data = request.get_data()
         json_data = json.loads(data.decode('utf-8'))
-        account = json_data.get('account')
+        firstname = json_data.get('firstname')
+        lastname = json_data.get('lastname')
+        account = json_data.get('accountname')
         password = json_data.get('password')
+        #confirm_password = json_data.get('confirm_password')
         email = json_data.get('email')
-
+        #birthday = json_data.get('birthday')
         dbsession = DBsession()
-        new_user = user(account = account,passwd = password,email = email)
+        new_user = user(account,password,email)
         try:
-
             db.session.add(new_user)
         except Exception as e:
             return jsonify({"register":'failed'})
-        return "i get a Post http"
+        db.session.commit()
+        return jsonify({'register':"success"})
 
 @user_info_bru.route('/user_edit',methods=['GET','POST'])
 def user_edit():

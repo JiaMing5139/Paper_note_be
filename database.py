@@ -6,13 +6,17 @@ class user(db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表了一
     _id= db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)  # id 整型，主键，自增，唯一
     _account = db.Column(db.String(20),unique=True)
     _passwd = db.Column(db.String(20))
-    _email = db.Column(db.String(20))
+    _email = db.Column(db.String(20), unique = True)
     __tablename__ = 'user'  # 该参数可选，不设置会默认的设置表名，如果设置会覆盖默认的表名
 
     def __init__(self,acount,passwd,email):  # 初始化方法，可以对对象进行创建
+        #self._firstname = firstname
+        #self._lastname = lastname
         self._account = acount
         self._passwd = passwd
+        #self._confirmpasswd = confirmpasswd
         self._email = email
+        #self._birthday = birthday
     def __repr__(self):  # 输出方法，与__str__类似，但是能够重现它所代表的对象
         return '<user %r, %r, %r>' % (self._id, self._account, self._passwd)
 
