@@ -17,7 +17,7 @@ def parseDocx(filename):
       sentens_list = []
       for p in new_list:
             sentens_list.append(p)
-            if 'abstract' in p or 'Abstract' in p:
+            if 'abstract' in p or 'Abstract' in p or 'ABSTRACT' in p:
                   abstract = p
       print(sentens_list)
       return title,author,abstract,sentens_list

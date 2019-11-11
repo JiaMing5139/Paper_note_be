@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import request
 from pydocx import PyDocX
 from paperUtil import parseDocx
-from app import db
+from dbext import db
 from database import paper
 from database import  sentence
 from flask import jsonify
@@ -39,8 +39,8 @@ def paper_upload():
         except Exception as e:
             print('log' + str(e))
             dbsession.rollback()
-            return jsonify({"upoad":"failed"})
-        return jsonify({"upoad":"success"})
+            return jsonify({"upload":"failed"})
+        return jsonify({"upload":"success"})
 
 #going to insert sentence to database
 #going to make html and store it in paperTable
@@ -109,12 +109,12 @@ def getPaperByTopTen():
     try:
        papers = dbsession.query(paper).filter().all() # error!!!!
        #print(len(papers))
-       print(papers[0])
-       print(type(papers))
+       #print(papers[0])
+       #print(type(papers))
        papers_json=get_papersjson(papers)
     except Exception as e:
         return {'query':'failed','exception':str(e)}
-    print(papers_json)
+    #print(papers_json)
     #papers_json =  papers(database) => papers_json
     papers_dict={'query':'success',"papers_json":papers_json}
     papers_json=json.dumps(papers_dict)

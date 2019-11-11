@@ -14,11 +14,14 @@ db.init_app(app)
 # init blueprint
 from user_info import user_info_bru
 from paper import paper_bru
+from notes import note_bru
 app.config["SECRET_KEY"] = "renyizifuchuan"
 
 CORS(app, supports_credentials=True)
 app.register_blueprint(user_info_bru)
+app.register_blueprint(note_bru)
 app.register_blueprint(paper_bru)
+
 
 
 
