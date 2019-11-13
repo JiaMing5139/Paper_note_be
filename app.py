@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 
 # init database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@35.199.106.213:3306/papernote'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@35.198.42.32:3306/papernote'
 db.init_app(app)
 
 #import database

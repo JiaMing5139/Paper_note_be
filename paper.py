@@ -5,6 +5,7 @@ from paperUtil import parseDocx
 from dbext import db
 from database import paper
 from database import  sentence
+from database import RecipeReviewModel
 from flask import jsonify
 import uuid
 import  json
@@ -141,6 +142,7 @@ def getPaperByPid():
         data = request.get_data()
         json_data = json.loads(data.decode('utf-8'))
         pid = json_data.get('pid')
+        print('pid:'+str(pid))
         # request for database
         dbsession = DBsession()
     paper_result = ''
@@ -158,3 +160,64 @@ def papertest():
     html = PyDocX.to_html('./paperPDF/' + 'bitcoin.docx')
     print(html)
     return html
+
+
+@paper_bru.route('/fulltext_input',methods=['GET','POST'])
+def fulltext_input():
+    if request.method == 'GET':
+        DBsession = sessionmaker(bind=db.engine)
+        dbsession = DBsession()
+        new_model=RecipeReviewModel(commentor="my name is pan jiaming",review="what a fucking name")
+        dbsession.add(new_model)
+        dbsession.commit()
+        return "success"
+from sqlalchemy_fulltext import FullText, FullTextSearch
+import sqlalchemy_fulltext.modes as FullTextMode
+
+from database import notes,user
+@paper_bru.route('/paper_search',methods=['GET','POST'])
+def paper_search():
+    if request.method == 'POST':
+        DBsession = sessionmaker(bind=db.engine)
+        data = request.get_data()
+        json_data = json.loads(data.decode('utf-8'))
+        catlog = json_data.get('catlog')
+        keyword = json_data.get('keyword')
+        dbsession = DBsession()
+        retList = []
+        if catlog == 'note':
+            full = dbsession.query(notes,user._account).join(user,user._id == notes._uid).filter(FullTextSearch(keyword,notes))
+            for note in full:
+                notep = note[0]
+                if notep._parentid != None:
+                    continue
+                id = notep._id
+                uid = notep._uid
+                content = notep.notesContent
+                _numOfnotes = notep._numOfnotes
+                pid = notep._pid
+                account = note[1]
+
+                thumup = 0
+                retList.append({'id': id, 'uid': uid, 'note': content, 'account': account, 'thumup': thumup,
+                                 'numOfReply': _numOfnotes,'pid': pid})
+            ret_dict = {'state': 'success', "notes_json": retList}
+            notes_json = json.dumps(ret_dict)
+            print(notes_json)
+            return notes_json
+        if catlog == 'paper':
+            full = dbsession.query(paper).filter(FullTextSearch(keyword, paper))
+            for part in full:
+                retList.append(
+                    {"id": part._id, "title": part._title, "abstract": part._abstract, "content": part._abstract, "author": part._author,
+                     "catlog": part._catlog,
+                     "numOfnotes": part._numOfnotes})
+
+            ret_dict = {'state': 'success', "paper_json": retList}
+            paper_json = json.dumps(ret_dict)
+            print(paper_json)
+
+            return paper_json
+
+        return "failed"
+
