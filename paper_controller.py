@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import request
 from pydocx import PyDocX
-from paperUtil import parseDocx
+from paper_Util import parseDocx
 from dbext import db
 from database import paper
 from database import  sentence
@@ -119,6 +119,7 @@ def getPaperByTopTen():
     #papers_json =  papers(database) => papers_json
     papers_dict={'query':'success',"papers_json":papers_json}
     papers_json=json.dumps(papers_dict)
+    dbsession.close()
     return papers_json
 def get_papersjson(papers):
     papers_json=[]
@@ -133,6 +134,7 @@ def get_papersjson(papers):
         paper_json={"id":id,"title":title,"abstract":abstract,"content":content,"author":author,"catlog":catlog,
                     "numOfnotes":numOfnotes}
         papers_json.append(paper_json)
+
     return papers_json
 
 @paper_bru.route('/getPaperByPid',methods=['GET','POST'])
@@ -153,6 +155,7 @@ def getPaperByPid():
         print("log"+str(e))
     print(paper_result)
     ret_dic = {'id':paper_result._id,'title':paper_result._title,'author':paper_result._author,'content':paper_result._content}
+    dbsession.close()
     return json.dumps(ret_dic)
 
 @paper_bru.route('/papertest',methods=['GET','POST'])
@@ -170,9 +173,11 @@ def fulltext_input():
         new_model=RecipeReviewModel(commentor="my name is pan jiaming",review="what a fucking name")
         dbsession.add(new_model)
         dbsession.commit()
+
         return "success"
 from sqlalchemy_fulltext import FullText, FullTextSearch
 import sqlalchemy_fulltext.modes as FullTextMode
+
 
 from database import notes,user
 @paper_bru.route('/paper_search',methods=['GET','POST'])
@@ -216,8 +221,8 @@ def paper_search():
             ret_dict = {'state': 'success', "paper_json": retList}
             paper_json = json.dumps(ret_dict)
             print(paper_json)
-
+            dbsession.close()
             return paper_json
-
+        dbsession.close()
         return "failed"
 

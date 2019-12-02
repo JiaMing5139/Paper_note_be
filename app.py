@@ -6,21 +6,23 @@ app = Flask(__name__)
 
 
 # init database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@35.198.42.32:3306/papernote'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@35.198.8.198:3306/papernotee'
 db.init_app(app)
 
 #import database
 
 # init blueprint
-from user_info import user_info_bru
-from paper import paper_bru
-from notes import note_bru
+from user_controller import user_info_bru
+from paper_controller import paper_bru
+from notes_controller import note_bru
+from fanRelation_controller import fans_bru
 app.config["SECRET_KEY"] = "renyizifuchuan"
 
 CORS(app, supports_credentials=True)
 app.register_blueprint(user_info_bru)
 app.register_blueprint(note_bru)
 app.register_blueprint(paper_bru)
+app.register_blueprint(fans_bru)
 
 
 

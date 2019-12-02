@@ -56,6 +56,7 @@ def note_add():
              print('log' + str(e))
              dbsession.rollback()
              return ({"state": "failed"})
+        dbsession.close()
         return jsonify({"state":"success","new_id": new_id})
 
 @note_bru.route('/subnote_add', methods=['GET', 'POST'])
@@ -72,10 +73,6 @@ def subnote_add():
         pid = json_data.get('pid')
         parentid = json_data.get('parentid')
         # print('sid:'+str(sid['0']))
-        print('uid:' + str(uid))
-        print('note:' + str(note))
-        print('pid:' + str(pid))
-        print('parentid:' + str(parentid))
 
         result = paralleldots.abuse(note)
         if (result['abusive'] > 0.9 or result['hate_speech'] > 0.9):
@@ -98,7 +95,9 @@ def subnote_add():
         except Exception as e:
             print('log' + str(e))
             dbsession.rollback()
+            dbsession.close()
             return ({"state": "failed"})
+        dbsession.close()
         return jsonify({"state": "success", "new_id": new_id})
 
 
@@ -144,7 +143,7 @@ def subnote_get():
             ret_dict = {'state': 'success', "notes_json": note_dic}
             notes_json = json.dumps(ret_dict)
             print(notes_json)
-
+            dbsession.close()
             return notes_json
 
 @note_bru.route('/note_get', methods=['GET', 'POST'])
@@ -187,5 +186,45 @@ def note_get():
         ret_dict = {'state': 'success', "notes_json": note_dic}
         notes_json = json.dumps(ret_dict)
         print(notes_json)
+        dbsession.close()
+        return notes_json
 
+
+@note_bru.route('/note_getbyAccount', methods=['GET', 'POST'])
+def note_getbyAccount():
+    if request.method == "GET":
+        return "i get a paper_uplodad Get http"
+    if request.method == "POST":
+        DBsession = sessionmaker(bind=db.engine)
+        data = request.get_data()
+        json_data = json.loads(data.decode('utf-8'))
+        account = json_data.get('account')
+
+        print("account" + account)
+        dbsession = DBsession()
+        numOfReplylist= []
+        try:
+            new_notes = dbsession.query(notes,user._account).join(user,user._id == notes._uid).filter(user._account == account).all()
+            dbsession.commit()
+            #dbsession.close()
+        except Exception as e:
+             print('log:' + str(e))
+             #dbsession.rollback()
+             return jsonify({"state":"failed"})
+        note_dic = []
+        for note in new_notes:
+            notep = note[0]
+            if notep._parentid != None:
+                continue
+            id = notep._id
+            uid = notep._uid
+            content = notep.notesContent
+            _numOfnotes = notep._numOfnotes
+            account = note[1]
+            thumup = 0
+            note_dic.append({'id':id,'uid':uid,'note':content,'account':account,'thumup':thumup,'numOfReply':_numOfnotes})
+        ret_dict = {'state': 'success', "notes_json": note_dic}
+        notes_json = json.dumps(ret_dict)
+        print(notes_json)
+        dbsession.close()
         return notes_json

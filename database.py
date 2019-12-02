@@ -10,14 +10,33 @@ class user(db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表了一
     _account = db.Column(db.String(20),unique=True)
     _passwd = db.Column(db.String(20))
     _email = db.Column(db.String(200))
+    _photoName = db.Column(db.String(200))
     __tablename__ = 'user'  # 该参数可选，不设置会默认的设置表名，如果设置会覆盖默认的表名
 
-    def __init__(self,  acount,passwd,email):  # 初始化方法，可以对对象进行创建
+    def __init__(self,  acount,passwd,email,photoName):  # 初始化方法，可以对对象进行创建
         self._account = acount
         self._passwd = passwd
         self._email = email
+        self._photoName = photoName
     def __repr__(self):  # 输出方法，与__str__类似，但是能够重现它所代表的对象
         return '<user %r, %r, %r>' % (self._id, self._account, self._passwd)
+
+class fansRelation(db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表了一张表al
+    #__table_args__ = {"useexisting": True}
+    _id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
+    #_subscriberId= db.Column(db.Integer)  # id 整型，主键，自增，唯一
+    _subscriberAccount = db.Column(db.String(20))
+    #_subscribedId = db.Column(db.Integer)
+    _subscribedAccount = db.Column(db.String(20))
+    __tablename__ = 'fansRelation'  # 该参数可选，不设置会默认的设置表名，如果设置会覆盖默认的表名
+
+    def __init__(self,_subscriberAccount,_subscribedAccount):  # 初始化方法，可以对对象进行创建
+       # self._subscriberId = _subscriberId
+        self._subscriberAccount = _subscriberAccount
+       # self._subscribedid = _subscribedid
+        self._subscribedAccount = _subscribedAccount
+    def __repr__(self):  # 输出方法，与__str__类似，但是能够重现它所代表的对象
+        return '<user %r, %r>' % (self._subscriberAccount, self._subscribedAccount)
 
 
 class paper(FullText,db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表了一张表
@@ -108,6 +127,16 @@ class user_paper(db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表
         self._pid = pid
         self._uid = uid
 
+class queue(db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表了一张表
+    #__table_args__ = {"useexisting": True}
+    _id= db.Column(db.Integer, primary_key=True, unique=True)  # id 整型，主键，自增，唯一
+    _pid = db.Column(db.String(256))  #forgin key
+    _uid =  db.Column(db.Integer)
+
+    __tablename__ = 'queue'  # 该参数可选，不设置会默认的设置表名，如果设置会覆盖默认的表名
+    def __init__(self,pid ,uid):  # 初始化方法，可以对对象进行创建
+        self._pid = pid
+        self._uid = uid
 
 FULLTEXT_TABLE = "test_full_text"
 from sqlalchemy.ext.declarative import declarative_base

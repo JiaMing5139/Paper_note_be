@@ -7,9 +7,8 @@ import  json
 from sqlalchemy.orm import sessionmaker
 from dbext import db
 
-print("userinformation-user1")
+
 from database import user
-print("userinformation-user")
 user_info_bru = Blueprint('user',__name__)
 
 @user_info_bru.route('/user_for',methods=['GET','POST'])
@@ -17,7 +16,27 @@ def user_get():
     if request.method == "GET":
         return "i get a Get http"
     if request.method == "POST":
-        return "i get a Post http"
+        print('login')
+        DBsession = sessionmaker(bind=db.engine)
+        data = request.get_data()
+        json_data = json.loads(data.decode('utf-8'))
+        account = json_data.get('account')
+        password = json_data.get('password')
+        dbsession = DBsession()
+        try:
+            user_data = dbsession.query(user).filter(user._account == account).all()
+            dbsession.commit()
+            #dbsession.close()
+        except Exception as e:
+            #dbsession.close()
+            return {"login": "failed", 'uid': 1, 'exception': str(e)}
+        print('user_login:query_result' + str(user_data))
+        if user_data == []:
+            return jsonify({"login": "failed", 'uid': 2, 'passwd': 'error'})
+        elif user_data[0]._passwd != password:
+            return jsonify({"login": "failed", 'uid': 3, 'passwd': 'error'})
+        session['uid'] = 1003
+        return jsonify({"login": "success", 'uid': user_data[0]._id, 'account': user_data[0]._account})
 
 @user_info_bru.route('/user_login',methods=['GET','POST'])
 def user_login():
@@ -32,7 +51,7 @@ def user_login():
         try:
          user_data = dbsession.query(user).filter(user._account == account).all()
          dbsession.commit()
-         #dbsession.close()
+
         except Exception as e:
             #dbsession.close()
             return {"login":"failed",'uid':1,'exception':str(e)}
@@ -42,6 +61,7 @@ def user_login():
         elif user_data[0]._passwd != password:
              return jsonify({"login":"failed",'uid':3,'passwd':'error'})
         session['uid'] = 1003
+        dbsession.close()
         return jsonify({"login":"success",'uid':user_data[0]._id,'account':user_data[0]._account})
 
 
@@ -55,16 +75,18 @@ def user_register():
         lastname = json_data.get('lastname')
         account = json_data.get('accountname')
         password = json_data.get('password')
+        photoName = json_data.get('photoName')
         #confirm_password = json_data.get('confirm_password')
         email = json_data.get('email')
         #birthday = json_data.get('birthday')
         dbsession = DBsession()
-        new_user = user(account,password,email)
+        new_user = user(account,password,email,photoName)
         try:
-            db.session.add(new_user)
+            dbsession.add(new_user)
         except Exception as e:
             return jsonify({"register":'failed'})
-        db.session.commit()
+        dbsession.commit()
+        dbsession.close()
         return jsonify({'register':"success"})
 
 @user_info_bru.route('/user_edit',methods=['GET','POST'])
@@ -77,3 +99,15 @@ def user_edit():
     if request.method == "POST":
         uid = session.get("uid")
         return "i want to edit user:" + uid
+
+@user_info_bru.route('/photo_upload',methods=['GET','POST'])
+def photo_upload():
+    if request.method == "GET":
+        return "i get a paper_uplodad Get http"
+    if request.method == "POST":
+        DBsession = sessionmaker(bind=db.engine)
+        file = request.files['file']
+        print("POST get" + file.filename)
+        file.save('/Users/jiamingpan/PycharmProjects/Paper_note/static/' + file.filename)
+        print("POST save"+file.filename)
+        return jsonify({"upload":"success","filename":file.filename})
