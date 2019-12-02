@@ -127,16 +127,18 @@ class user_paper(db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表
         self._pid = pid
         self._uid = uid
 
-class queue(db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表了一张表
+class Message(db.Model):  # 继承SQLAlchemy.Model对象，一个对象代表了一张表
     #__table_args__ = {"useexisting": True}
-    _id= db.Column(db.Integer, primary_key=True, unique=True)  # id 整型，主键，自增，唯一
-    _pid = db.Column(db.String(256))  #forgin key
-    _uid =  db.Column(db.Integer)
+    _id= db.Column(db.Integer, primary_key=True, unique=True)  # id 整型，主键，自增，唯一  #forgin key
+    _type = db.Column(db.String(20))
+    _src = db.Column(db.String(20))
+    _dst = db.Column(db.String(20))
 
-    __tablename__ = 'queue'  # 该参数可选，不设置会默认的设置表名，如果设置会覆盖默认的表名
-    def __init__(self,pid ,uid):  # 初始化方法，可以对对象进行创建
-        self._pid = pid
-        self._uid = uid
+    __tablename__ = 'Message'  # 该参数可选，不设置会默认的设置表名，如果设置会覆盖默认的表名
+    def __init__(self,_type,_src,_dst):  # 初始化方法，可以对对象进行创建
+        self._type = _type
+        self._src = _src
+        self._dst = _dst
 
 FULLTEXT_TABLE = "test_full_text"
 from sqlalchemy.ext.declarative import declarative_base

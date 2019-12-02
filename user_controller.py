@@ -111,3 +111,12 @@ def photo_upload():
         file.save('/Users/jiamingpan/PycharmProjects/Paper_note/static/' + file.filename)
         print("POST save"+file.filename)
         return jsonify({"upload":"success","filename":file.filename})
+from MessageQueueClass import MessageQueue
+@user_info_bru.route('/get_messagebyAccount',methods=['GET','POST'])
+def get_messagebyAccount():
+    if request.method == "POST":
+        DBsession = sessionmaker(bind=db.engine)
+        data = request.get_data()
+        json_data = json.loads(data.decode('utf-8'))
+        account = json_data.get('account')
+

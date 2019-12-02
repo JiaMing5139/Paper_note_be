@@ -58,7 +58,7 @@ def note_add():
              return ({"state": "failed"})
         dbsession.close()
         return jsonify({"state":"success","new_id": new_id})
-
+from MessageQueueClass import MessageQueue
 @note_bru.route('/subnote_add', methods=['GET', 'POST'])
 def subnote_add():
     if request.method == "GET":
@@ -72,12 +72,15 @@ def subnote_add():
         note = json_data.get('note')
         pid = json_data.get('pid')
         parentid = json_data.get('parentid')
+        paraentUserID = json_data.get('paraentUserID')
+        senderAccount = json_data.get('senderAccount')
+        paraentUserAccount=json_data.get('paraentUserAccount')
         # print('sid:'+str(sid['0']))
 
         result = paralleldots.abuse(note)
         if (result['abusive'] > 0.9 or result['hate_speech'] > 0.9):
             return {"state": "badcomment"}
-
+        messagequeue = MessageQueue(parentid)
         new_note = notes(sid=sid['0'], notes=note, uid=uid, pid=pid, parentid=parentid)
         dbsession = DBsession()
         try:
@@ -92,6 +95,8 @@ def subnote_add():
             dbsession.commit()
 
             dbsession.close()
+            print('uid:'+str(senderAccount)+' parentid:' + str(paraentUserAccount))
+            messagequeue.enqueue('reply',senderAccount,paraentUserAccount)
         except Exception as e:
             print('log' + str(e))
             dbsession.rollback()
@@ -115,6 +120,7 @@ def subnote_get():
             note = json_data.get('note')
             pid = json_data.get('pid')
             parentid = json_data.get('parentid')
+
             noteType = json_data.get('type')
 
             dbsession = DBsession()
