@@ -61,12 +61,12 @@ def get_subScribed():
         for item in full_subscribed:
             Relation = item[0]
             User = item[1]
-            Msg_subscribed.append({'subscriberAccount':User._account,'subscriberphoto':User._photoName})
+            Msg_subscribed.append({'subscriberAccount':User._account,'subscriberphoto':'http://127.0.0.1:5000/static/' + User._photoName})
         Msg_following = []
         for item in full_following:
             Relation = item[0]
             User = item[1]
-            Msg_following.append({'subscribedAccount': User._account, 'subscribedphoto': User._photoName})
+            Msg_following.append({'subscribedAccount': User._account, 'subscribedphoto': 'http://127.0.0.1:5000/static/' + User._photoName})
 
         ret_dict = {'state': 'success','subscriberphoto':subscriber[0]._photoName, "subscribed_json": Msg_subscribed,"following_json": Msg_following}
         Relation_json = json.dumps(ret_dict)
